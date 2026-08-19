@@ -123,8 +123,8 @@ footer a{color:var(--primary-deep)}
     <p class="hint">兩格各填至少 3 個關鍵字（每個 8 字以內），越多題目越豐富！</p>
 
     <div class="gridlabel">👀 我的目標觀眾 <span class="tag">你的影片拍給誰看？</span></div>
-    <p class="hint" style="margin:4px 0 0">一個身份就好，框出年齡層更好</p>
-    <div class="grid9" style="grid-template-columns:1fr"><input id="whoInput" maxlength="12" placeholder="例：25-45歲的媽媽"></div>
+    <p class="hint" style="margin:4px 0 0">一個身份就好，短一點，題目才順口</p>
+    <div class="grid9" style="grid-template-columns:1fr"><input id="whoInput" maxlength="12" placeholder="例：媽媽"></div>
 
     <div class="gridlabel">💭 這個身份會關注的議題 <span class="tag">他們每天在煩惱什麼？</span></div>
     <p class="hint" style="margin:4px 0 0">站在「<span id="whoEcho">這個身份</span>」的角度想：生活裡在意、煩惱、渴望的事</p>
@@ -250,7 +250,7 @@ const CTAS={
  dm:{n:'📩 私訊導流',d:'私訊領取・諮詢',line:'邀請觀眾私訊你，領取資源或進一步諮詢'},
  link:{n:'🔗 連結導流',d:'主頁連結・課程服務',line:'引導觀眾點你的主頁連結，進一步了解你的課程或服務'}
 };
-const EX_WHO='25-45歲的媽媽';
+const EX_WHO='媽媽';
 const EX_I=['時間不夠','育兒開銷','親子溝通','婆媳相處','重返職場','自我成長','夫妻分工','睡眠品質','想要副業'];
 const EX_P=['記帳','省錢','緊急預備金','家庭預算','存錢方法','親子理財','保險觀念','投資入門','財務目標'];
 const PH_I=['例：時間不夠','例：育兒開銷','例：親子溝通','議題 4','議題 5','議題 6','議題 7','議題 8','議題 9'];
@@ -336,7 +336,7 @@ function loadExample(){
     toast('會覆蓋你現在填的內容，4 秒內再按一次確認');return;
   }
   clearTimeout(exArmed);exArmed=null;
-  S.who=EX_WHO;S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids();toast('範例載入完成（25-45歲的媽媽 × 財務規劃）✨');
+  S.who=EX_WHO;S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids();toast('範例載入完成（媽媽 × 財務規劃）✨');
 }
 function clearGrid(g){
   if(g==='I')S.i=Array(9).fill('');else S.p=Array(9).fill('');
@@ -351,7 +351,7 @@ function shareLink(){
 function hideHero(){S.seen=true;save();document.getElementById('hero').classList.add('hidden')}
 function demo(){
   if(!S.who.trim()&&!kws(S.i).length&&!kws(S.p).length){S.who=EX_WHO;S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids()}
-  hideHero();startDraw();toast('這是「25-45歲的媽媽 × 財務規劃」的示範，玩玩看！');
+  hideHero();startDraw();toast('這是「媽媽 × 財務規劃」的示範，玩玩看！');
 }
 
 /* ───────── 題庫 ───────── */
