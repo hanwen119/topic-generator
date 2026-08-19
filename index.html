@@ -148,14 +148,16 @@ footer a{color:var(--primary-deep)}
 
     <details>
       <summary>🤯 想不出關鍵字？讓 AI 幫你腦力激盪</summary>
-      <p class="hint" style="margin-top:8px">複製下面這段話，貼到你的 ChatGPT 或 Claude：</p>
+      <p class="hint" style="margin-top:8px">複製下面這段話，貼到你的 ChatGPT 或 Claude，送出前把兩條「＿＿＿」換成你的答案：</p>
       <div class="promptbox" id="kwPrompt">我想經營短影音。
-我的目標觀眾是：（請填，例如：25-45歲的媽媽）
-我的專業是：（請填，例如：財務規劃）
+我的目標觀眾是：＿＿＿
+我的專業是：＿＿＿
 
-請幫我腦力激盪兩組關鍵字：
-1.「觀眾議題」9 個：這個身份的人，生活裡在意、煩惱、渴望的事（例如：時間不夠、育兒開銷、親子溝通）
-2.「專業」9 個：我的專業裡會講到的主題（例如：記帳、省錢、緊急預備金）
+如果上面任何一格是空白或「＿＿＿」，代表我忘了填，請先問我，不要自己猜、也不要拿範例代替。
+
+確認之後，請幫我腦力激盪兩組關鍵字：
+1.「觀眾議題」9 個：這個身份的人，生活裡在意、煩惱、渴望的事（例：時間不夠、育兒開銷）
+2.「專業」9 個：我的專業裡會講到的主題（例：記帳、省錢）
 
 每個關鍵字都不要超過 8 個字，用清單列出來。</div>
       <button class="btn btn-soft" onclick="copyText(document.getElementById('kwPrompt').innerText,'已複製！貼到你的 AI 吧 ✨')">📋 複製這段話</button>
