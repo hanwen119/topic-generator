@@ -122,19 +122,24 @@ footer a{color:var(--primary-deep)}
     <h2>🧩 我的九宮格</h2>
     <p class="hint">兩格各填至少 3 個關鍵字（每個 8 字以內），越多題目越豐富！</p>
 
-    <div class="gridlabel">👩 我的身份 <span class="tag">你的影片拍給誰看？</span></div>
-    <p class="hint" style="margin:4px 0 0">描述目標觀眾身份的關鍵字，越具體越好</p>
-    <div class="grid9" id="gridI"></div>
+    <div class="gridlabel">👀 我的目標觀眾 <span class="tag">你的影片拍給誰看？</span></div>
+    <p class="hint" style="margin:4px 0 0">一個身份就好，框出年齡層更好</p>
+    <div class="grid9" style="grid-template-columns:1fr"><input id="whoInput" maxlength="12" placeholder="例：25-45歲的媽媽"></div>
 
-    <div class="gridlabel">💼 我的專業 <span class="tag">他們會關心什麼主題？</span></div>
-    <p class="hint" style="margin:4px 0 0">你的專業裡，這群人最想知道的主題關鍵字</p>
+    <div class="gridlabel">💭 這個身份會關注的議題 <span class="tag">他們每天在煩惱什麼？</span></div>
+    <p class="hint" style="margin:4px 0 0">站在「<span id="whoEcho">這個身份</span>」的角度想：生活裡在意、煩惱、渴望的事</p>
+    <div class="grid9" id="gridI"></div>
+    <div style="text-align:right"><button class="btn btn-ghost" onclick="clearGrid('I')">🧹 清空這九格</button></div>
+
+    <div class="gridlabel">💼 我的專業 <span class="tag">你能給的解方是什麼？</span></div>
+    <p class="hint" style="margin:4px 0 0">你的專業裡會講到的主題關鍵字</p>
     <div class="grid9" id="gridP"></div>
+    <div style="text-align:right"><button class="btn btn-ghost" onclick="clearGrid('P')">🧹 清空這九格</button></div>
 
     <p class="counter" id="counter"></p>
     <div class="btnrow">
       <button class="btn btn-primary" onclick="startDraw()">🎲 開始抽題</button>
       <button class="btn btn-soft" onclick="loadExample()">載入範例</button>
-      <button class="btn btn-ghost" onclick="clearAll()">清空重填</button>
     </div>
     <div class="btnrow">
       <button class="btn btn-soft" onclick="shareLink()">🔗 產生我的專屬連結</button>
@@ -145,12 +150,12 @@ footer a{color:var(--primary-deep)}
       <summary>🤯 想不出關鍵字？讓 AI 幫你腦力激盪</summary>
       <p class="hint" style="margin-top:8px">複製下面這段話，貼到你的 ChatGPT 或 Claude：</p>
       <div class="promptbox" id="kwPrompt">我想經營短影音。
+我的目標觀眾是：（請填，例如：25-45歲的媽媽）
 我的專業是：（請填，例如：財務規劃）
-我想拍給這群人看：（請填，例如：媽媽）
 
 請幫我腦力激盪兩組關鍵字：
-1.「身份」9 個：描述我目標觀眾身份的關鍵字，越具體越好（例如：媽媽、新手媽媽、職場媽媽）
-2.「專業」9 個：我的專業裡，這群人最關心的主題（例如：記帳、省錢、緊急預備金）
+1.「觀眾議題」9 個：這個身份的人，生活裡在意、煩惱、渴望的事（例如：時間不夠、育兒開銷、親子溝通）
+2.「專業」9 個：我的專業裡會講到的主題（例如：記帳、省錢、緊急預備金）
 
 每個關鍵字都不要超過 8 個字，用清單列出來。</div>
       <button class="btn btn-soft" onclick="copyText(document.getElementById('kwPrompt').innerText,'已複製！貼到你的 AI 吧 ✨')">📋 複製這段話</button>
@@ -227,17 +232,17 @@ footer a{color:var(--primary-deep)}
 /* ───────── 資料 ───────── */
 const ANGLES=[
  {k:'pain', n:'痛點型', e:'😖', struct:'general', cta:'dm',
-  tpl:['{i}最常在{p}上犯的 3 個錯','為什麼{i}的{p}總是半途而廢？']},
+  tpl:['卡在{l}的{w}，{p}最常犯的 3 個錯','{w}的{p}總是失敗？可能是{l}害的']},
  {k:'myth', n:'迷思型', e:'🤔', struct:'general', cta:'engage',
-  tpl:['{i}都以為{p}很難，其實只是方法錯了','關於{p}，{i}最常誤會的一件事']},
+  tpl:['{w}都以為{l}和{p}無關，其實關係超大','{l}的{w}，最常誤會{p}的一件事']},
  {k:'story', n:'故事型', e:'📖', struct:'arc', cta:'engage',
-  tpl:['身為{i}，{p}是怎麼救了我一次','我用{p}，解決了{i}最頭痛的那件事']},
+  tpl:['身為{w}，我靠{p}熬過了{l}那段日子','{l}曾讓我好崩潰，後來{p}救了我']},
  {k:'teach', n:'教學型', e:'🧭', struct:'general', cta:'follow',
-  tpl:['{i}也能上手的{p}第一步','{i}時間再少，也做得到的{p}方法']},
+  tpl:['給{l}的{w}：{p}的第一步這樣走','一邊面對{l}，一邊做好{p}的方法']},
  {k:'list', n:'清單型', e:'📋', struct:'general', cta:'follow',
-  tpl:['給{i}的 3 個{p}小撇步','{i}必收藏的{p}懶人包']},
+  tpl:['{l}的{w}必收：3 個{p}小撇步','幫{w}同時搞定{l}和{p}的懶人包']},
  {k:'twist', n:'反差型', e:'⚡', struct:'arc', cta:'follow',
-  tpl:['沒人告訴{i}的{p}真相','{p}做得好的{i}，都偷偷在做這件事']}
+  tpl:['{p}做得好的{w}，{l}反而不再是問題','沒人告訴{w}：{l}背後，藏著{p}的問題']}
 ];
 const CTAS={
  follow:{n:'🌱 漲粉',d:'請觀眾追蹤我',line:'邀請觀眾追蹤你，之後看更多「{p}」相關的內容'},
@@ -245,19 +250,22 @@ const CTAS={
  dm:{n:'📩 私訊導流',d:'私訊領取・諮詢',line:'邀請觀眾私訊你，領取資源或進一步諮詢'},
  link:{n:'🔗 連結導流',d:'主頁連結・課程服務',line:'引導觀眾點你的主頁連結，進一步了解你的課程或服務'}
 };
-const EX_I=['媽媽','新手媽媽','職場媽媽','全職媽媽','二寶媽','單親媽媽','小資媽媽','準媽媽','家庭主婦'];
+const EX_WHO='25-45歲的媽媽';
+const EX_I=['時間不夠','育兒開銷','親子溝通','婆媳相處','重返職場','自我成長','夫妻分工','睡眠品質','想要副業'];
 const EX_P=['記帳','省錢','緊急預備金','家庭預算','存錢方法','親子理財','保險觀念','投資入門','財務目標'];
-const PH_I=['例：媽媽','例：新手媽媽','例：職場媽媽','身份 4','身份 5','身份 6','身份 7','身份 8','身份 9'];
+const PH_I=['例：時間不夠','例：育兒開銷','例：親子溝通','議題 4','議題 5','議題 6','議題 7','議題 8','議題 9'];
 const PH_P=['例：記帳','例：省錢','例：緊急預備金','主題 4','主題 5','主題 6','主題 7','主題 8','主題 9'];
 const LSKEY='hmtg_v1';
 
 /* ───────── 狀態 ───────── */
-let S={i:Array(9).fill(''),p:Array(9).fill(''),plan:null,cta:null,seen:false};
+let S={who:'',i:Array(9).fill(''),p:Array(9).fill(''),plan:null,cta:null,seen:false};
 let curTopic=null, curCta=null, curFilter='all', drawn=[];
 
 function save(){try{localStorage.setItem(LSKEY,JSON.stringify(S))}catch(e){}}
 function load(){
   try{const d=JSON.parse(localStorage.getItem(LSKEY));if(d&&d.i)S=Object.assign(S,d)}catch(e){}
+  if(typeof S.who!=='string')S.who='';
+  if(S.plan&&S.plan.items&&S.plan.items.length&&S.plan.items[0].l===undefined)S.plan=null; /* v1 舊格式作廢 */
   applyHash();
 }
 function applyHash(){
@@ -266,6 +274,7 @@ function applyHash(){
     const d=JSON.parse(decodeURIComponent(location.hash.slice(3)));
     if(d.i&&d.p){
       S.i=d.i.concat(Array(9).fill('')).slice(0,9);S.p=d.p.concat(Array(9).fill('')).slice(0,9);
+      if(typeof d.w==='string')S.who=d.w;
       S.seen=true;save();toast('已載入你的專屬九宮格 ✨');
       history.replaceState(null,'',location.pathname);
       return true;
@@ -278,7 +287,12 @@ window.addEventListener('hashchange',()=>{if(applyHash()){buildGrids();go(1)}});
 
 /* ───────── 九宮格 ───────── */
 function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateEcho(){document.getElementById('whoEcho').textContent=S.who.trim()||'這個身份'}
 function buildGrids(){
+  const wi=document.getElementById('whoInput');
+  wi.value=S.who||'';
+  wi.oninput=()=>{S.who=wi.value.trim();save();refreshCount();updateEcho()};
+  updateEcho();
   ['I','P'].forEach(g=>{
     const el=document.getElementById('grid'+g), ph=g==='I'?PH_I:PH_P, arr=g==='I'?S.i:S.p;
     el.innerHTML='';
@@ -305,44 +319,55 @@ function markDups(){
   });
 }
 function refreshCount(){
-  const ni=new Set(kws(S.i)).size,np=new Set(kws(S.p)).size,c=document.getElementById('counter');
-  if(ni>=3&&np>=3)c.innerHTML=`✅ 身份 ${ni} 個 × 專業 ${np} 個 × 6 種切角＝可以生出 <b>${ni*np*2*3}</b> 個題目！`;
-  else c.innerHTML=`還差一點點：身份 ${ni}/3、專業 ${np}/3（各填滿 3 個就能開抽 💪）`;
+  const who=S.who.trim(),ni=new Set(kws(S.i)).size,np=new Set(kws(S.p)).size,c=document.getElementById('counter');
+  if(who&&ni>=3&&np>=3)c.innerHTML=`✅ ${esc(who)}的 ${ni} 個議題 × ${np} 個專業關鍵字 × 6 種切角＝可以生出 <b>${ni*np*6}</b> 個題目！`;
+  else{
+    const miss=[];
+    if(!who)miss.push('目標觀眾還沒填');
+    if(ni<3)miss.push(`議題 ${ni}/3`);
+    if(np<3)miss.push(`專業 ${np}/3`);
+    c.innerHTML=`還差一點點：${miss.join('、')}（就能開抽 💪）`;
+  }
 }
+let exArmed=null;
 function loadExample(){
-  if(kws(S.i).length||kws(S.p).length){if(!confirm('會覆蓋你現在填的內容，確定載入範例？'))return}
-  S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids();toast('範例載入完成（媽媽 × 財務規劃）✨');
+  if((kws(S.i).length||kws(S.p).length)&&!exArmed){
+    exArmed=setTimeout(()=>exArmed=null,4000);
+    toast('會覆蓋你現在填的內容，4 秒內再按一次確認');return;
+  }
+  clearTimeout(exArmed);exArmed=null;
+  S.who=EX_WHO;S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids();toast('範例載入完成（25-45歲的媽媽 × 財務規劃）✨');
 }
-function clearAll(){
-  if(!confirm('確定清空九宮格？（30 天清單會一起清掉）'))return;
-  S.i=Array(9).fill('');S.p=Array(9).fill('');S.plan=null;save();buildGrids();history.replaceState(null,'',location.pathname);
+function clearGrid(g){
+  if(g==='I')S.i=Array(9).fill('');else S.p=Array(9).fill('');
+  save();buildGrids();toast(g==='I'?'議題九宮格清空了 🧹':'專業九宮格清空了 🧹');
 }
 function shareLink(){
-  const i=kws(S.i),p=kws(S.p);
-  if(i.length<3||p.length<3){toast('先把身份、專業各填滿 3 個關鍵字喔');return}
-  const url=location.origin+location.pathname+'#d='+encodeURIComponent(JSON.stringify({i,p}));
+  const w=S.who.trim(),i=kws(S.i),p=kws(S.p);
+  if(!w||i.length<3||p.length<3){toast('先填目標觀眾，議題、專業各填滿 3 個喔');return}
+  const url=location.origin+location.pathname+'#d='+encodeURIComponent(JSON.stringify({w,i,p}));
   copyText(url,'專屬連結複製好了！存到 LINE 記事本吧 🔗');
 }
 function hideHero(){S.seen=true;save();document.getElementById('hero').classList.add('hidden')}
 function demo(){
-  if(!kws(S.i).length&&!kws(S.p).length){S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids()}
-  hideHero();startDraw();toast('這是「媽媽 × 財務規劃」的示範，玩玩看！');
+  if(!S.who.trim()&&!kws(S.i).length&&!kws(S.p).length){S.who=EX_WHO;S.i=EX_I.slice();S.p=EX_P.slice();save();buildGrids()}
+  hideHero();startDraw();toast('這是「25-45歲的媽媽 × 財務規劃」的示範，玩玩看！');
 }
 
 /* ───────── 題庫 ───────── */
 function buildTopics(){
-  const I=kws(S.i),P=kws(S.p),out=[];
-  I.forEach((iv,ii)=>P.forEach((pv,pi)=>ANGLES.forEach(a=>{
-    out.push({t:a.tpl[(ii+pi)%2].replace('{i}',iv).replace('{p}',pv),i:iv,p:pv,a:a.k});
+  const w=S.who.trim(),I=kws(S.i),P=kws(S.p),out=[];
+  I.forEach((lv,li)=>P.forEach((pv,pi)=>ANGLES.forEach(a=>{
+    out.push({t:a.tpl[(li+pi)%2].split('{w}').join(w).split('{l}').join(lv).split('{p}').join(pv),l:lv,p:pv,a:a.k});
   })));
   return out;
 }
 function ang(k){return ANGLES.find(a=>a.k===k)}
-function ready(){return kws(S.i).length>=3&&kws(S.p).length>=3}
+function ready(){return !!S.who.trim()&&kws(S.i).length>=3&&kws(S.p).length>=3}
 
 /* ───────── 導航 ───────── */
 function go(n){
-  if(n===2&&!ready()){toast('先把身份、專業各填滿 3 個關鍵字喔');return}
+  if(n===2&&!ready()){toast('先填目標觀眾，議題、專業各填滿 3 個喔');return}
   document.getElementById('step1').classList.toggle('hidden',n!==1);
   document.getElementById('step2').classList.toggle('hidden',n!==2);
   document.getElementById('nav1').classList.toggle('on',n===1);
@@ -357,7 +382,7 @@ function subgo(n){
   if(n===2)renderPlan();
   if(n===3)renderAll();
 }
-function startDraw(){if(!ready()){toast('先把身份、專業各填滿 3 個關鍵字喔');return}go(2);subgo(1);draw()}
+function startDraw(){if(!ready()){toast('先填目標觀眾，議題、專業各填滿 3 個喔');return}go(2);subgo(1);draw()}
 
 /* ───────── 今日抽題 ───────── */
 function sample(arr,n,excl){
@@ -377,6 +402,7 @@ function draw(){
     const a=ang(t.a);
     return `<div class="topiccard"><span class="chip ${a.k}">${a.e} ${a.n}</span>
       <div class="t">${esc(t.t)}</div>
+      <span class="hint" style="margin:0;font-size:.82rem">💭 ${esc(t.l)} × 💼 ${esc(t.p)}</span>
       <button class="btn btn-primary pickbtn" onclick="openTopic(drawn[${x}])">🎬 就拍這題</button></div>`;
   }).join('');
 }
@@ -398,7 +424,11 @@ function makePlan(){
   S.plan={start:new Date().toISOString().slice(0,10),items};save();renderPlan();
   toast('30 天排好了！每天回來看今天拍什麼 📅');
 }
-function remakePlan(){if(confirm('重新排會蓋掉現在這份 30 天清單，確定？'))makePlan()}
+let rpArmed=null;
+function remakePlan(){
+  if(!rpArmed){rpArmed=setTimeout(()=>rpArmed=null,4000);toast('會蓋掉現在這份 30 天清單，4 秒內再按一次確認');return}
+  clearTimeout(rpArmed);rpArmed=null;makePlan();
+}
 function fmtDate(d){
   const w=['日','一','二','三','四','五','六'];
   return `${d.getMonth()+1}/${d.getDate()}（${w[d.getDay()]}）`;
@@ -468,14 +498,15 @@ function renderCta(){
 }
 function pickCta(k){curCta=k;S.cta=k;save();renderCta();buildPrompt()}
 function buildPrompt(){
-  const t=curTopic,a=ang(t.a);
+  const t=curTopic,a=ang(t.a),w=S.who.trim()||'我的目標觀眾';
   const struct=a.struct==='arc'
     ?`用「情緒弧線」結構說一個真實的小故事：以前的狀態或一般的做法（對比）→ 遇到的轉折（但是…）→ 我才發現的頓悟 → 帶出方法或體悟 → 最後行動呼籲`
-    :`結構：第一句是鉤子（讓「${t.i}」一聽就有共鳴或好奇）→ 點出痛點 → 給出方法、步驟或例子 → 最後行動呼籲`;
+    :`結構：第一句是鉤子（讓「${w}」一聽就有共鳴或好奇）→ 點出痛點 → 給出方法、步驟或例子 → 最後行動呼籲`;
   const p=`你是一位專業的短影音口播稿寫手。
 
-我的影片是拍給「${t.i}」看的，我的專業主題和「${t.p}」有關。
-這支影片的題目：「${t.t}」（切角：${a.n}）
+我的影片是拍給「${w}」看的。
+這支影片要把觀眾在意的「${t.l}」，用我的專業「${t.p}」接住來講。
+題目：「${t.t}」（切角：${a.n}）
 
 【第一步：先訪問我，不要急著寫稿】
 請先問我 2~3 個問題，挖出我在這個題目上的親身經驗或真實案例（我自己遇過的、學員或客戶發生過的都可以）。等我回答之後，把我的真實故事放進稿子裡，再開始寫。
