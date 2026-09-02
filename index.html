@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EKJ68PB5HP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EKJ68PB5HP');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -263,6 +271,7 @@ const LSKEY='hmtg_v1';
 let S={who:'',i:Array(9).fill(''),p:Array(9).fill(''),plan:null,cta:null,seen:false};
 let curTopic=null, curCta=null, curFilter='all', drawn=[];
 
+function track(name,params){try{if(typeof gtag==='function')gtag('event',name,params||{})}catch(e){}}
 function save(){try{localStorage.setItem(LSKEY,JSON.stringify(S))}catch(e){}}
 function load(){
   try{const d=JSON.parse(localStorage.getItem(LSKEY));if(d&&d.i)S=Object.assign(S,d)}catch(e){}
@@ -384,7 +393,7 @@ function subgo(n){
   if(n===2)renderPlan();
   if(n===3)renderAll();
 }
-function startDraw(){if(!ready()){toast('先填目標觀眾，議題、專業各填滿 3 個喔');return}go(2);subgo(1);draw()}
+function startDraw(){if(!ready()){track('grid_incomplete');toast('先填目標觀眾，議題、專業各填滿 3 個喔');return}track('grid_ready');go(2);subgo(1);draw()}
 
 /* ───────── 今日抽題 ───────── */
 function sample(arr,n,excl){
@@ -411,6 +420,7 @@ function draw(){
 
 /* ───────── 30 天 ───────── */
 function makePlan(){
+  track('make_30day_plan');
   const all=buildTopics(),byA={};
   ANGLES.forEach(a=>byA[a.k]=all.filter(t=>t.a===a.k).sort(()=>Math.random()-.5));
   const items=[];let r=0;
@@ -525,7 +535,7 @@ function buildPrompt(){
 寫完口播稿後，另外給我一個「10 個字以內」的影片標題（會放在影片畫面上的主標，要吸睛）。`;
   document.getElementById('mPrompt').value=p;
 }
-function copyPrompt(){copyText(document.getElementById('mPrompt').value,'提示詞複製好了！貼到你的 AI 吧 ✨')}
+function copyPrompt(){track('copy_prompt');copyText(document.getElementById('mPrompt').value,'提示詞複製好了！貼到你的 AI 吧 ✨')}
 
 /* ───────── 工具 ───────── */
 function copyText(txt,msg){
